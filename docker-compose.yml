@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: nnptud-mongo
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017" # Ánh xạ cổng (máy thật : docker)
+    volumes:
+      - mongo_data:/data/db # Lưu trữ dữ liệu lâu dài dể không bị mất khi tắt container
+
+volumes:
+  mongo_data:
