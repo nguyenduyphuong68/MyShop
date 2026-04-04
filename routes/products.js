@@ -51,6 +51,10 @@ router.post('/', checkLogin, checkRole("ADMIN"), async function (req, res, next)
   let session = await mongoose.startSession();
   session.startTransaction()
   try {
+    let initialStock = Number.parseInt(req.body.stock, 10);
+    if (Number.isNaN(initialStock) || initialStock < 0) {
+      initialStock = 1;
+    }
     let newItem = new productModel({
       title: req.body.title,
       slug: ConvertTitleToSlug(req.body.title),
@@ -58,14 +62,15 @@ router.post('/', checkLogin, checkRole("ADMIN"), async function (req, res, next)
       price: req.body.price,
       description: req.body.description,
       category: req.body.category,
-      images: req.body.images
+      images: req.body.images,
+      quantity: initialStock,
     })
     //replica set
     let newProduct = await newItem.save({ session });
     console.log(newProduct);
     let newInventory = new InventoryModel({
       product: newProduct._id,
-      stock: 1
+      stock: initialStock
     })
     newInventory = await newInventory.save({ session });
     await newInventory.populate('product')
@@ -80,13 +85,21 @@ router.post('/', checkLogin, checkRole("ADMIN"), async function (req, res, next)
 })
 router.put('/:id', checkLogin, checkRole("ADMIN"), async function (req, res, next) {
   let id = req.params.id;
-  let updatedItem = await productModel.findByIdAndUpdate(
-    id, req.body, {
-    new: true
+  let body = { ...req.body };
+  let qtySync = undefined;
+  if (body.quantity !== undefined) {
+    let q = Number(body.quantity);
+    if (!Number.isNaN(q) && q >= 0) qtySync = q;
   }
-  )
-  res.send(updatedItem)
-
+  let updatedItem = await productModel.findByIdAndUpdate(id, body, { new: true });
+  if (!updatedItem) {
+    return res.status(404).send({ message: 'id not found' });
+  }
+  if (qtySync !== undefined) {
+    await InventoryModel.findOneAndUpdate({ product: id }, { stock: qtySync });
+    updatedItem.quantity = qtySync;
+  }
+  res.send(updatedItem);
 })
 router.delete('/:id', checkLogin, checkRole("ADMIN"), async function (req, res, next) {
   let id = req.params.id;

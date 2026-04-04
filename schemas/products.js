@@ -19,6 +19,11 @@ let productSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    quantity: {
+        type: Number,
+        min: 0,
+        default: 0
+    },
     description: {
         type: String,
         default: ""

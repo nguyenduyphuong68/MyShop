@@ -1,5 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
+var bodyParser = require('body-parser');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -17,6 +18,21 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
+app.use(bodyParser.text({ type: 'text/plain', limit: '10mb' }));
+app.use(function parseTextBodyAsJson(req, res, next) {
+  if (typeof req.body === 'string') {
+    var t = req.body.trim();
+    if ((t.charAt(0) === '{' && t.charAt(t.length - 1) === '}') ||
+        (t.charAt(0) === '[' && t.charAt(t.length - 1) === ']')) {
+      try {
+        req.body = JSON.parse(req.body);
+      } catch (e) {
+        req.body = {};
+      }
+    }
+  }
+  next();
+});
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));

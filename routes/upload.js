@@ -96,7 +96,8 @@ router.post('/excel/v1', uploadExcel.single('file'), async function (req, res, n
                     }),
                     price: price,
                     description: title,
-                    category: category
+                    category: category,
+                    quantity: stock,
                 })
                 //replica set
                 let newProduct = await newItem.save({ session });

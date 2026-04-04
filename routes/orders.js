@@ -67,6 +67,8 @@ router.post('/checkout', checkLogin, async function (req, res, next) {
             // Deduct Inventory
             inventory.stock -= item.quantity;
             await inventory.save({ session });
+            productInfo.quantity = inventory.stock;
+            await productInfo.save({ session });
 
             // Accumulate total
             totalPrice += (productInfo.price * item.quantity);
