@@ -31,7 +31,7 @@ router.get('/', async function (req, res, next) {
 //get by ID
 router.get('/:id', async function (req, res, next) {
   try {
-    let result = await productModel.find({ _id: req.params.id });
+    let result = await productModel.find({ _id: req.params.id, isDeleted: false });
     if (result.length > 0) {
       res.send(result)
     } else {
@@ -84,22 +84,34 @@ router.post('/', checkLogin, checkRole("ADMIN"), async function (req, res, next)
   }
 })
 router.put('/:id', checkLogin, checkRole("ADMIN"), async function (req, res, next) {
-  let id = req.params.id;
-  let body = { ...req.body };
-  let qtySync = undefined;
-  if (body.quantity !== undefined) {
-    let q = Number(body.quantity);
-    if (!Number.isNaN(q) && q >= 0) qtySync = q;
+  let session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    let id = req.params.id;
+    let body = { ...req.body };
+    let qtySync = undefined;
+    if (body.quantity !== undefined) {
+      let q = Number(body.quantity);
+      if (!Number.isNaN(q) && q >= 0) qtySync = q;
+    }
+    let updatedItem = await productModel.findByIdAndUpdate(id, body, { new: true, session });
+    if (!updatedItem) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).send({ message: 'id not found' });
+    }
+    if (qtySync !== undefined) {
+      await InventoryModel.findOneAndUpdate({ product: id }, { stock: qtySync }, { session });
+      updatedItem.quantity = qtySync;
+    }
+    await session.commitTransaction();
+    session.endSession();
+    res.send(updatedItem);
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    res.status(500).send(error.message);
   }
-  let updatedItem = await productModel.findByIdAndUpdate(id, body, { new: true });
-  if (!updatedItem) {
-    return res.status(404).send({ message: 'id not found' });
-  }
-  if (qtySync !== undefined) {
-    await InventoryModel.findOneAndUpdate({ product: id }, { stock: qtySync });
-    updatedItem.quantity = qtySync;
-  }
-  res.send(updatedItem);
 })
 router.delete('/:id', checkLogin, checkRole("ADMIN"), async function (req, res, next) {
   let id = req.params.id;
