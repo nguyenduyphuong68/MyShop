@@ -70,19 +70,19 @@ router.get('/', checkLogin, async function (req, res, next) {
     }).sort({
         createdAt: -1
     }).populate('from to')
-    let mapUser = new Map()
+    let mapUser = new Map();
+    let myId = user1.toString();
     for (const message of messages) {
-        let userFrom = message.from.username;
-        let userTo = message.to.username;
-        let user2 = user1 == userFrom ? userTo : userFrom;
-        if (!mapUser.has(user2)) {
-            mapUser.set(user2, message)
+        if (!message.from || !message.to) continue;
+        let fromId = message.from._id.toString();
+        let toId = message.to._id.toString();
+        let otherUserId = (myId === fromId) ? toId : fromId;
+        
+        if (!mapUser.has(otherUserId)) {
+            mapUser.set(otherUserId, message);
         }
     }
-    let result = []
-    mapUser.forEach((value) => {
-        result.push(value) 
-    })
+    let result = Array.from(mapUser.values());
     res.send(result)
 })
 module.exports = router;

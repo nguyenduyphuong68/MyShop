@@ -10,6 +10,16 @@ let mongoose = require('mongoose')
 
 let userController = require("../controllers/users");
 
+// Lấy danh sách Support/Admin cho Chat Client
+router.get("/staff", checkLogin, async function (req, res, next) {
+    try {
+        let users = await userModel.find({ isDeleted: false }, '-password').populate('role');
+        let staff = users.filter(u => u.role && (u.role.name === 'ADMIN' || u.role.name === 'SUPPORT'));
+        res.send(staff);
+    } catch (err) {
+        res.status(500).send({ message: err.message });
+    }
+});
 
 router.get("/", checkLogin, checkRole("ADMIN"), async function (req, res, next) {
   let result = await userController.getAllUser();

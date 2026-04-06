@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyShop - Khám phá Sự Tinh tế</title>
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Toastify for Alert Popups -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">My<span>Shop</span></a>
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm sản phẩm...">
+            </div>
+            <div class="nav-actions">
+                <!-- User / Auth Toggle -->
+                <div id="authContainer" class="auth-container">
+                    <button class="icon-btn" id="loginBtn" title="Tài khoản"><i class="fa-regular fa-user"></i></button>
+                    <!-- User Profile Dropdown shown when authenticated -->
+                    <div class="user-dropdown" id="userMenu" style="display: none;">
+                        <button class="icon-btn profile-trigger" id="profileBtn">
+                            <img src="" alt="Avatar" class="avatar-sm" id="userAvatar">
+                        </button>
+                        <div class="dropdown-content">
+                            <div class="dropdown-header">
+                                Xin chào, <strong id="userNameDisplay">User</strong>!
+                            </div>
+                            <a href="#" id="orderHistoryBtn"><i class="fa-solid fa-box"></i> Đơn hàng của tôi</a>
+                            <a href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="icon-btn cart-btn" id="cartBtn" title="Giỏ hàng">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-badge" id="cartBadgeCount">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Sự Thanh lịch Hiện hữu Trong Từng Chi tiết</h1>
+            <p>Nâng tầm phong cách sống của bạn với bộ sưu tập các mặt hàng cao cấp được tích hợp tính năng Web Real-time đỉnh cao.</p>
+            <button class="cta-btn">Khám phá <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+        <div class="hero-graphics">
+            <div class="glass-card decor-1"></div>
+            <div class="glass-card decor-2"></div>
+            <div class="glass-card main-decor">
+                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" alt="Sản phẩm nổi bật">
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Section -->
+    <section class="products-section">
+        <div class="section-header">
+            <h2>Sản phẩm Nổi bật</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="products-grid" id="productsGrid">
+            <!-- Tự động load JS -->
+            <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu ...</div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>My<span>Shop</span></h3>
+                <p>Nơi phong cách và chất lượng hội tụ.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Hỗ trợ</h4>
+                <ul>
+                    <li><a href="#">Câu hỏi thường gặp</a></li>
+                    <li><a href="#">Vận chuyển</a></li>
+                    <li><a href="#">Đổi trả</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 MyShop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal login-modal">
+            <button class="close-btn" id="closeLoginBtn"><i class="fa-solid fa-xmark"></i></button>
+            <h2>Mừng Bạn Trở Lại</h2>
+            <p>Đăng nhập bằng tài khoản để lưu trữ giỏ hàng</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" required placeholder="Tên đăng nhập (VD: admin)">
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" id="loginPassword" required placeholder="•••••••• (VD: 1234)">
+                </div>
+                <button type="submit" class="submit-btn" id="loginSubmitBtn">
+                    <span>Đăng Nhập</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order History Modal -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal order-modal" style="max-width: 600px;">
+            <button class="close-btn" id="closeOrderBtn"><i class="fa-solid fa-xmark"></i></button>
+            <h2>Lịch sử Đơn hàng</h2>
+            <p>Những giao dịch gần đây của bạn</p>
+            <div class="order-list" id="orderListContainer">
+                <p style="text-align:center; color: var(--text-muted); margin: 3rem 0;">Đang kết nối để tải dữ liệu...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide-over Cart -->
+    <div class="cart-overlay" id="cartOverlay">
+        <div class="cart-sidebar">
+            <div class="cart-header">
+                <h2>Giỏ hàng (<span id="cartCountHeader">0</span>)</h2>
+                <button class="close-btn" id="closeCartBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <!-- Cart items load here -->
+                <div class="empty-cart">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <p>Giỏ hàng đang trống.</p>
+                </div>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Tổng hóa đơn</span>
+                    <span id="cartTotalPrice">$0.00</span>
+                </div>
+                <button class="checkout-btn" id="checkoutBtn">Hoàn tất Thanh toán</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Chat Widget -->
+    <div class="chat-widget-container">
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <div class="brand" id="chatHeaderTitle">
+                    <i class="fa-solid fa-headset"></i> MyShop Support
+                </div>
+                <div>
+                    <button class="close-chat" id="backChatBtn" style="display:none; margin-right:8px;" title="Quay lại"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button class="close-chat" id="closeChatBtn"><i class="fa-solid fa-minus"></i></button>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages" style="padding:0; position:relative;">
+                <!-- Auth Overlay -->
+                <div class="chat-unauth-overlay" id="chatUnauthOverlay" style="z-index: 20;">
+                    <i class="fa-solid fa-lock"></i>
+                    <p>Vui lòng đăng nhập để chat</p>
+                </div>
+                
+                <!-- State 1: Agent List -->
+                <div id="chatAgentSelector" style="padding: 1rem; height: 100%; overflow-y: auto;">
+                    <p style="margin-bottom:10px; font-weight:600; font-size:0.9rem; color:var(--text-muted)">Hôm nay bạn cần chuyên viên nào hỗ trợ?</p>
+                    <div id="agentList" style="display:flex; flex-direction:column; gap:10px;">
+                        <p style="text-align:center; font-size:0.9rem; margin-top:20px;">Đang tải danh sách Admin...</p>
+                    </div>
+                </div>
+
+                <!-- State 2: Chat Room -->
+                <div id="chatRoom" style="display: none; height: 100%; flex-direction: column; padding: 1rem; overflow-y: auto; gap: 12px;">
+                    <div class="msg system">Chào mừng bạn! Tính năng Live Chat đã kết nối.</div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chatInputMessage" placeholder="Chọn một tư vấn viên trước..." disabled>
+                <button class="send-btn" id="chatSendBtn" disabled><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+        
+        <button class="chat-toggle-btn" id="chatToggleBtn">
+            <i class="fa-solid fa-comments"></i>
+            <span class="chat-unread-badge" id="chatUnreadBadge" style="display:none; position:absolute; top:-5px; right:-5px; background:#EF4444; color:white; width:22px; height:22px; border-radius:50%; font-size:11px; font-weight:bold; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.2);">!</span>
+        </button>
+    </div>
+
+    <!-- Scripts: SocketIO, Toastify, Main Logic -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

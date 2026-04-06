@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyShop - Trang Quản Trị (Admin)</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Toastify -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <!-- Admin Custom CSS -->
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body style="display: none;" id="adminBody">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="logo">My<span>Admin</span></a>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-tab="products"><i class="fa-solid fa-box"></i> Quản lý Sản phẩm</li>
+                <li data-tab="users"><i class="fa-solid fa-users"></i> Quản lý Thành viên</li>
+                <li data-tab="orders"><i class="fa-solid fa-file-invoice-dollar"></i> Lịch sử Hoá đơn</li>
+                <li data-tab="chat"><i class="fa-solid fa-message"></i> Tin nhắn Hỗ trợ</li>
+            </ul>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-nav">
+                <div class="user-info">
+                    <span id="adminName">Loading...</span>
+                    <i class="fa-solid fa-user-shield" style="color:var(--primary)"></i>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Products Tab -->
+                <div id="tab-products" class="tab-pane active">
+                    <div class="page-header">
+                        <h2>Danh sách Sản Phẩm</h2>
+                        <button class="btn btn-primary" id="openAddProductModal"><i class="fa-solid fa-plus"></i> Thêm Sản Phẩm</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID / SKU</th>
+                                    <th>Tên Sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th>Tồn kho</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <tr><td colspan="6" class="text-center">Đang tải...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="tab-users" class="tab-pane">
+                    <div class="page-header">
+                        <h2>Quản lý Thành viên</h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã tài khoản</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Email</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr><td colspan="4" class="text-center">Đang tải...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Orders Tab -->
+                <div id="tab-orders" class="tab-pane">
+                    <div class="page-header">
+                        <h2>Toàn bộ Hoá đơn (Chỉ Xem)</h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Đơn hàng</th>
+                                    <th>Khách hàng</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <tr><td colspan="5" class="text-center">Đang tải...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Chat Inbox Tab -->
+                <div id="tab-chat" class="tab-pane">
+                    <div class="page-header">
+                        <h2>Tin nhắn Khách hàng</h2>
+                    </div>
+                    <div style="display:flex; height:65vh; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--surface);">
+                        <!-- Sidebar Chat List -->
+                        <div style="width:300px; border-right:1px solid var(--border); overflow-y:auto; background:#F9FAFB;" id="adminChatList">
+                            <p style="padding:20px; text-align:center; color:var(--text-muted);">Đang tải danh sách...</p>
+                        </div>
+                        <!-- Active Chat Room -->
+                        <div style="flex:1; display:flex; flex-direction:column; background:var(--surface);">
+                            <div style="padding:15px; border-bottom:1px solid var(--border); font-weight:600; display:flex; justify-content:space-between; align-items:center;">
+                                <span id="adminActiveChatName">Chọn một cuộc hội thoại</span>
+                            </div>
+                            <div id="adminChatHistory" style="flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
+                                <p style="text-align:center; color:var(--text-muted); margin-top:50px;">Tin nhắn sẽ hiển thị tại đây.</p>
+                            </div>
+                            <div style="padding:15px; border-top:1px solid var(--border); display:flex; gap:10px;">
+                                <input type="text" id="adminChatInput" placeholder="Nhập câu trả lời..." disabled style="flex:1; padding:10px 15px; border:1px solid var(--border); border-radius:30px; outline:none;">
+                                <button id="adminSendChatBtn" class="btn btn-primary" disabled><i class="fa-solid fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Thêm Sản phẩm</h3>
+                <button class="close-btn" id="closeProductModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="prodId">
+                <div class="form-group">
+                    <label>Tên Sản phẩm</label>
+                    <input type="text" id="prodTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Giá bán ($)</label>
+                    <input type="number" id="prodPrice" min="0" required>
+                </div>
+                <div class="form-group" id="stockGroup">
+                    <label>Tồn kho Khởi tạo</label>
+                    <input type="number" id="prodStock" min="1" value="10">
+                    <small>Chỉ có tác dụng khi Thêm mới</small>
+                </div>
+                <div class="form-group">
+                    <label>Danh mục</label>
+                    <input type="text" id="prodCategory">
+                </div>
+                <!-- Mặc định cấp hình ảnh cứng cho nhanh (Hoặc upload tùy API) -->
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:15px;">Lưu Thay Đổi</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

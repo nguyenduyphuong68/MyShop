@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 let mongoose = require('mongoose');
 
-let { checkLogin } = require('../utils/authHandler');
+let { checkLogin, checkRole } = require('../utils/authHandler');
 let cartModel = require('../schemas/carts');
 let productModel = require('../schemas/products');
 let inventoryModel = require('../schemas/inventories');
@@ -15,6 +15,16 @@ router.get('/', checkLogin, async function (req, res, next) {
         let orders = await orderModel.find({ user: req.userId }).sort({ createdAt: -1 });
         // Nếu cần lấy chi tiết, ta có thể viết 1 vòng lặp thủ công hoặc dùng tính năng virtual của mongose.
         // Ở đây lấy danh sách đơn giản.
+        res.send(orders);
+    } catch (err) {
+        res.status(500).send({ message: err.message });
+    }
+});
+
+// Lấy danh sách Toàn bộ đơn hàng (Cho Admin)
+router.get('/all', checkLogin, checkRole('ADMIN'), async function (req, res, next) {
+    try {
+        let orders = await orderModel.find({}).sort({ createdAt: -1 }).populate('user', 'username email');
         res.send(orders);
     } catch (err) {
         res.status(500).send({ message: err.message });
